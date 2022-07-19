@@ -13,7 +13,7 @@ export const signUpRoute = {
     console.log("before databse")
     var user = await db.collection("users").findOne({ email });
 
-    if (user) res.status(409);
+    if (user) res.sendStatus(409);
     console.log("user is here:", user)
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -40,13 +40,14 @@ export const signUpRoute = {
         isVerfied: false,
       },
       `${process.env.JWT_KEY}`,
+      {expiresIn: '2d'},
       (err, token) => {
         if (err) {
             // console.log("error inside token", err)
-          return res.status(500).send(err);
+          return res.sendStatus(500).send(err);
         } else {
             // console.log("token from server", token)
-          return res.status(200).json({ token });
+          return res.sendStatus(200).json({ token });
         }
       }
     );
