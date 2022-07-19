@@ -23,7 +23,11 @@ export const signUpRoute = {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const initialInfo = {
-      hairColor: "",
+      
+      
+      bio: '',
+      favoriteFood: '',
+      hairColor: '',
       isVerfied: false,
     };
 
