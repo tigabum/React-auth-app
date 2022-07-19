@@ -1,15 +1,20 @@
 import { getDbConnection } from "../db";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+require("dotenv").config();
+
 export const signUpRoute = {
   path: "/api/signup",
-  method: "Post",
+  method: "post",
   handler: async (req, res) => {
     const { email, password } = req.body;
 
     var db = getDbConnection("react-db-auth");
-    var user = db.collection("users").findOne({ email });
+    console.log("before databse")
+    var user = await db.collection("users").findOne({ email });
 
-    if (email) res.sendStatus(409);
+    if (user) res.status(409);
+    console.log("user is here:", user)
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -25,5 +30,25 @@ export const signUpRoute = {
     });
 
     const { insertedId } = result;
+    // console.log("id from database", insertedId)
+
+    jwt.sign(
+      {
+        id: insertedId,
+        email,
+        initialInfo,
+        isVerfied: false,
+      },
+      `${process.env.JWT_KEY}`,
+      (err, token) => {
+        if (err) {
+            // console.log("error inside token", err)
+          return res.status(500).send(err);
+        } else {
+            // console.log("token from server", token)
+          return res.status(200).json({ token });
+        }
+      }
+    );
   },
 };
