@@ -9,12 +9,16 @@ export const signUpRoute = {
   handler: async (req, res) => {
     const { email, password } = req.body;
 
-    var db = getDbConnection("react-db-auth");
+    const db = getDbConnection("react-db-auth");
     console.log("before databse")
-    var user = await db.collection("users").findOne({ email });
+    const user = await db.collection("users").findOne({ email });
 
-    if (user) res.sendStatus(409);
-    console.log("user is here:", user)
+    if (user) {
+      res.sendStatus(409);
+      console.log("user is already in collection:", user)
+    }
+    console.log("user is not in the collction")
+   
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -45,10 +49,10 @@ export const signUpRoute = {
         if (err) {
             // console.log("error inside token", err)
           return res.sendStatus(500).send(err);
-        } else {
-            // console.log("token from server", token)
-          return res.sendStatus(200).json({ token });
-        }
+        } 
+            console.log("token from server", token)
+          res.status(200).json({token});
+        
       }
     );
   },
